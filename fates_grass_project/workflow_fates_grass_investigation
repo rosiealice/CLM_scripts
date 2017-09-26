@@ -1,23 +1,30 @@
 Workflow for grass investigation 
 
 
-Check out fates-clm
+-- Check out fates-clm
 Git clone https://github.com/NGEET/fates-clm
 
+--  Set up 4x5 global case
+cd fates-clm/cime/scripts 
+./create_newcase --case clmFATES_4x5_24sep17_c4grass_v4 --res f45_f45 --compset 2000_DATM%QIA_CLM45%ED_SICE_SOCN_RTM_SGLC_SWAV
+./case_setup
+./case_build
 
-Set up 4x5 global case
-cd fates-clm/cime/scripts
-./create_newcase --case clmFATES_4x5_10sep17_BGC --res f45_f45 --compset 2000_DATM%QIA_CLM45%ED_SICE_SOCN_RTM_SGLC_SWAV
-Make 2 C4 grass PFT files. Using /glade/u/home/rfisher/Matlab/fates_pft_files/fates_grass_competition.m 
-Which is also at : https://github.com/rosiealice/CLM_scripts/blob/master/fates_grass_competition.m
+-- Make 2xC4 grass PFT files. Using fates_grass_competition.m 
+
+-- Parameter file is fates_params_2C4grasses.c200913.nc
  
-Port the new PFT file to the user_nl_clm. 
+-- Port the new PFT file to the user_nl_clm file. 
 fates_paramfile = '/glade/u/home/rfisher/Matlab/fates_pft_files/fates_params_2C4grasses.c200913.nc'
 
- Run simulation
+-- Setup simulation timings. 
+xmlchange stop_n=10
+xmlchange resubmit = 5
 
-Plot results with:
-/glade/u/home/rfisher/Matlab/fates_output/fates_grass_output.m
+-- Run simulation
+./case_setup
+
+Plot results with fates_grass_output.m
 
  
 
