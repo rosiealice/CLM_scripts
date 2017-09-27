@@ -9,7 +9,7 @@ filename = 'fates_params_2C4grasses.c200913.nc'
 copyfile(template,filename)
 
 fates_seed_alloc = [0.107 0.286]
-fates_clone_alloc = 1- seed_alloc;
+fates_clone_alloc = 1- fates_seed_alloc;
 fates_max_dbh   = [0.15 0.15]
 fates_c3psn = [0 0 ]
 fates_initd= [5 5]
