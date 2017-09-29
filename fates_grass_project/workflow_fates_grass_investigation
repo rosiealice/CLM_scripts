@@ -24,8 +24,20 @@ xmlchange resubmit = 5
 -- Run simulation
 ./case_setup
 
-Plot results with fates_grass_output.m
+-- Plot results with fates_grass_output.m
 
- 
+-- Made new cases for one-at-a-time parameter changes using these PFT files: 
+fates_params_2C4grasses_a_no_seed_diffs.nc
+fates_params_2C4grasses_b_no_seed_or_root_diffs.nc
+
+and these cases
+clmFATES_4x5_24sep17_c4grass_v4a
+clmFATES_4x5_24sep17_c4grass_v4b
+
+Which are both clones of 
+clmFATES_4x5_24sep17_c4grass_v4
+neither of them have fire...
+
+
 
 
