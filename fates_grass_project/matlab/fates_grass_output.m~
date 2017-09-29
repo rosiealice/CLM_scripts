@@ -6,7 +6,7 @@ clear all
 
 %command variables. 
 npft=2	
-ychoose=17 %year
+ychoose=6 %year
 mchoose=6 %month
 vchoose=5 %variable
 pchoose=[1:4] %iteration
@@ -27,7 +27,7 @@ dirnames  = {'clmFATES_4x5_24sep17_c4grass_v5_SLA','clmFATES_4x5_24sep17_c4grass
 
 arc=1
 arcc = zeros(1,max(pchoose))+arc;
-arcc = [1 1 1 1 ]
+arcc = [1 1 1 0  ]
 
 %subplot position function.(needs https://github.com/acmyers/chillerDataVisual/blob/master/subplot_pos.m)
 plotheight = 10;plotwidth = 35;

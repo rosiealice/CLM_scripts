@@ -1,0 +1,34 @@
+Workflow for grass investigation.
+github files live in 
+
+https://github.com/rosiealice/CLM_scripts/
+
+SIMULATION STEPS
+Check out fates-clm
+Git clone https://github.com/NGEET/fates-clm
+
+
+1. Set up 4x5 global case
+cd fates-clm/cime/scripts
+./create_newcase --case clmFATES_4x5_10sep17_BGC --res f45_f45 --compset 2000_DATM%QIA_CLM45%ED_SICE_SOCN_RTM_SGLC_SWAV
+
+Bring in Eriks env_mach_pes.xml layout. 
+/glade/p/work/rfisher/git/fates-clm/cime/scripts/clmFATES_4x5_24sep17_c4grass_v4/env_mach
+
+2. Make 2 C4 grass PFT files. Using /glade/u/home/rfisher/Matlab/fates_pft_files/fates_grass_competition.m 
+Which is also at : https://github.com/rosiealice/CLM_scripts/blob/master/fates_grass_competition.m
+ 
+3. Port the new PFT file to the user_nl_clm. 
+fates_paramfile = '/glade/u/home/rfisher/Matlab/fates_pft_files/fates_params_2C4grasses.c200913.nc'
+
+3. Set up simulation timing in env_run.xml
+stop_n = 10
+resubmit = 5
+
+
+4. Run simulation (./case_submit)
+
+OUTPUT ANAYLSIS
+Plot results with:
+/glade/u/home/rfisher/Matlab/fates_output/fates_grass_output.m
+

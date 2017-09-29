@@ -5,30 +5,21 @@ close all
 clear all
 
 %command variables. 
-npft=2	
-ychoose=17 %year
-mchoose=6 %month
+npft=2
+ychoose=19 %year
+mchoose=2 %month
 vchoose=5 %variable
-pchoose=[1:4] %iteration
+pchoose=[1] %iteration
 maps=1
 mkfigs=1
 figdir='fates_grass_figures'
 if(0==exist(figdir,'dir'))
   mkdir(figdir)
 end
-
-
-dirnames  = {'clmFATES_4x5_24sep17_c4grass_v4','clmFATES_4x5_24sep17_c4grass_v4_strppa','clmFATES_4x5_24sep17_c4grass_v4_fire','clmFATES_4x5_24sep17_c4grass_v4a',...
-'clmFATES_4x5_24sep17_c4grass_v4b','clmFATES_4x5_28sep17_troptrees_v1','clmFATES_4x5_28sep17_troptrees_v2_strppa'}
-
  
-dirnames  = {'clmFATES_4x5_24sep17_c4grass_v5_SLA','clmFATES_4x5_24sep17_c4grass_v5_SLA_RL','clmFATES_4x5_24sep17_c4grass_v5_SLA_RL_RS',...
-'clmFATES_4x5_24sep17_c4grass_v5_SLA_RL_RS_SD','clmFATES_4x5_24sep17_c4grass_v5_SLA_RL_RS_SD_fire'}
-
+dirname='clmFATES_4x5_24sep17_c4grass_v4'
 arc=1
-arcc = zeros(1,max(pchoose))+arc;
-arcc = [1 1 1 1 ]
-
+ 
 %subplot position function.(needs https://github.com/acmyers/chillerDataVisual/blob/master/subplot_pos.m)
 plotheight = 10;plotwidth = 35;
 subplotsx = npft;subplotsy = 1;
@@ -51,23 +42,18 @@ maxy            = [ 3500  6      1200    1      100              1000      100 ]
 
 
 for p=pchoose
-
-
-dirname=char(dirnames(p))
-%dirname = 'clmFATES_4x5_24sep17_c4grass_v4'
-
-
 if (mkfigs == 1)
- % close all
+  close all
   if (maps == 1)
     for v = vchoose
       maps1(v) = figure;
       set(gcf, 'position', [ 402         571        1321         531])
-     
     end
     mkfigs = 1
   end
 end
+
+arcc = zeros(1,max(pchoose))+arc;
 	      
 if(arcc(p)==1)
   dir_clm = strcat('/glade/scratch/rfisher/archive/',dirname,'/lnd/hist/')
@@ -109,7 +95,7 @@ if (maps == 1)
    count(vchoose) = 1
    for v = vchoose
       figure(maps1(v))
-      set(gcf, 'name',strcat(char(namevars(v)),dirname))
+      set(gcf, 'name',char(namevars(v)))
       clf(maps1(v));
       set(gcf, 'PaperUnits', 'centimeters');
       set(gcf, 'PaperSize', [plotwidth plotheight]);
@@ -144,7 +130,9 @@ if (maps == 1)
       end %pft
       wysiwyg
       fnm = strcat(figdir, '/grass_',dirname,'_y',char(num2str(ychoose)))
-      print(gcf, '-depsc2', '-loose', [fnm, '.jpeg']);
+      print(gcf, '-depsc2', '-loose', [fnm, '.eps']);
+      eps2pdf(strcafnm) 
+      system(['convert -density 200 ', fnm, '.eps ', fnm, '.png'])
 
    end %v
 end %maps
