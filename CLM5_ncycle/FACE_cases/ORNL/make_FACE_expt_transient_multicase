@@ -1,0 +1,47 @@
+#! /bin/tcsh -f
+setenv CODENAME clm4_5_16_r260_fates_amazon
+setenv NAME FACE_
+set niter=5
+set nparam=5
+set p=4
+
+while ($p<$nparam)
+set x=1
+while ($x<$niter)
+
+setenv EXPTNAME FUN_sens_ens_transient_E_PI$p$x
+set echo
+
+cd  /glade/p/work/rfisher/svn/$CODENAME
+
+cd cime/scripts
+cd FACE_CLM5_ENS
+pwd
+
+rm -rf $EXPTNAME
+
+../create_clone --clone FUN_sens_ens_transient_PI11 --case $EXPTNAME
+
+rm -f /glade/scratch/rfisher/$EXPTNAME/run
+
+cd $EXPTNAME
+
+./xmlchange BUILD_COMPLETE="TRUE"
+
+
+set uclm="fsurdat='/glade/p/work/rfisher/svn/clm4_5_16_r260_fates_amazon/cime/scripts/FACE_CLM5_ENS/BASE_clm4_5_16_r260_fates_amazon_ys/surfdata_jan62018_ORNL_xy.nc'\nhist_empty_htapes = .false.\nfinidat='/glade/scratch/rfisher/FUN_sens_ens_D_PI$p$x/run/FUN_sens_ens_D_PI$p$x.clm2.r.2178-01-01-00000.nc'\nparamfile='/glade/u/home/rfisher/Matlab/pft_files/FACE_CLM_params/FACE_CLM_params_jan1718_pi$p$x.nc'"
+echo  $uclm >user_nl_clm
+
+
+./case.setup
+
+cp /glade/u/home/rfisher/clm_case_scripts/datm.streams.txt.co2tseries_elev_newformat /glade/scratch/rfisher/$EXPTNAME/run/datm.streams.txt.co2tseries
+
+
+#./case.build
+./case.submit
+@ x ++
+end
+@ p ++
+end
+    

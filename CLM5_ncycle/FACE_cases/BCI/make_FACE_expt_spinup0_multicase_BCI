@@ -1,0 +1,71 @@
+#! /bin/tcsh -f
+setenv CODENAME clm5.0_mar18/
+setenv NAME FACE_BCI_
+set niter=5
+set nparam=15
+set p=1
+set BASECASE=CLM5-pf1.2000_DATM%1PT_CLM50%BGC_SICE_SOCN_RTM_SGLC_SWAV.cheyenne.Cedd59ca-F52bad28.1521489651
+set BASEYEAR=2071
+
+while ($p<$nparam)
+set x=1
+while ($x<$niter)
+
+setenv EXPTNAME CLM5_BCI_FACE_sens_ens_PI$p$x
+set echo
+
+cd  /glade/p/work/rfisher/git/$CODENAME
+
+cd cime/scripts
+cd BCI_SENS_TEST
+pwd
+
+rm -rf $EXPTNAME
+
+../create_clone --clone ../$BASECASE --case $EXPTNAME
+
+rm -f /glade/scratch/rfisher/$EXPTNAME/run
+
+cd $EXPTNAME
+
+./xmlchange STOP_N=100
+./xmlchange STOP_OPTION=nyears
+./xmlchange RESUBMIT=3
+./xmlchange CCSM_CO2_PPMV=287
+./xmlchange EXEROOT="/glade/scratch/rfisher/$BASECASE/bld/"
+./xmlchange BUILD_COMPLETE="TRUE"
+
+#./xmlchange JOB_QUEUE=share
+#./xmlchange MAX_TASKS_PER_NODE=1
+#./xmlchange MPILIB=mpi-serial
+./xmlchange JOB_WALLCLOCK_TIME=05:45:00
+
+
+
+
+#cp /glade/u/home/rfisher/clm_case_scripts/user_nl_datm_FACE_spinup user_nl_datm
+# can't work out how to write this directly from the script. 
+cat user_nl_datm
+
+#only for transient simulations
+#cd /glade/scratch/rfisher/'FACE_'$CODENAME$EXPTNAME/run
+#pwd
+#cp ../../FACE_expt_v5_control/run/datm.streams.txt.co2tseries .
+#cd  /glade/p/work/rfisher/svn/$CODENAME/cime/scripts/'FACE_'$CODENAME$EXPTNAME
+
+
+# write user_nl_clm
+
+
+set uclm="fsurdat='/glade/u/home/rfisher/CTSM-FATES_inputs/bci_0.1x0.1_v4.0i/surfdata_bci_sparse_grid_c180227.nc'\nfinidat='/glade/scratch/rfisher/$BASECASE/run/$BASECASE.clm2.r.$BASEYEAR-06-01-00000.nc'\nparamfile='/glade/u/home/rfisher/Matlab/pft_files/FACE_CLM_params/FACE_CLM_params_jan18_pi$p$x.nc'"
+echo  $uclm >user_nl_clm
+
+
+./case.setup
+#./case.build
+./case.submit
+@ x ++
+end
+@ p ++
+end
+    

@@ -1,0 +1,78 @@
+#! /bin/tcsh -f
+setenv CODENAME clm4_5_16_r260_fates_amazon
+setenv NAME FACE_
+set niter=5
+set nparam=15
+set p=14
+
+while ($p<$nparam)
+set x=1
+while ($x<$niter)
+
+setenv EXPTNAME FUN_sens_ens_D_PI$p$x
+set echo
+
+cd  /glade/p/work/rfisher/svn/$CODENAME
+
+cd cime/scripts
+cd FACE_CLM5_ENS
+pwd
+
+rm -rf $EXPTNAME
+
+../create_clone --clone BASE_clm4_5_16_r260_fates_amazon_DEF_RESPIN --case $EXPTNAME
+
+rm -f /glade/scratch/rfisher/$EXPTNAME/run
+
+cd $EXPTNAME
+
+./xmlchange CLM_USRDAT_NAME=1x1pt_US-ORN
+./xmlchange DATM_CLMNCEP_YR_START=1998
+./xmlchange DATM_CLMNCEP_YR_END=2008
+./xmlchange CLM_BLDNML_OPTS='-mask navy'
+./xmlchange ATM_DOMAIN_PATH=/glade/u/home/rfisher/FACE_expt/PTCLM/mydatafiles
+./xmlchange LND_DOMAIN_PATH=/glade/u/home/rfisher/FACE_expt/PTCLM/mydatafiles
+./xmlchange ATM_DOMAIN_FILE=domain.lnd.1x1pt_US-ORN.nc
+./xmlchange LND_DOMAIN_FILE=domain.lnd.1x1pt_US-ORN.nc
+./xmlchange CALENDAR=GREGORIAN
+./xmlchange MPILIB=mpi-serial
+./xmlchange DOUT_S=FALSE
+./xmlchange ATM_NCPL=48
+./xmlchange RUN_STARTDATE=1998-01-01
+./xmlchange DATM_CLMNCEP_YR_ALIGN=1998
+./xmlchange DIN_LOC_ROOT=/glade/p/cesm/cseg/inputdata
+./xmlchange DIN_LOC_ROOT_CLMFORC=/glade/u/home/rfisher/FACE_expt/PTCLM/mydatafiles
+./xmlchange STOP_N=100
+./xmlchange STOP_OPTION=nyears
+./xmlchange CLM_BLDNML_OPTS="-mask navy -bgc bgc"
+./xmlchange RESUBMIT=0
+./xmlchange CCSM_CO2_PPMV=287
+./xmlchange EXEROOT="/glade/scratch/rfisher/BASE_clm4_5_16_r260_fates_amazon/bld/"
+./xmlchange BUILD_COMPLETE="TRUE"
+
+cp /glade/u/home/rfisher/clm_case_scripts/user_nl_datm_FACE_spinup user_nl_datm
+# can't work out how to write this directly from the script. 
+cat user_nl_datm
+
+#only for transient simulations
+#cd /glade/scratch/rfisher/'FACE_'$CODENAME$EXPTNAME/run
+#pwd
+#cp ../../FACE_expt_v5_control/run/datm.streams.txt.co2tseries .
+#cd  /glade/p/work/rfisher/svn/$CODENAME/cime/scripts/'FACE_'$CODENAME$EXPTNAME
+
+
+# write user_nl_clm
+
+set uclm="fsurdat='/glade/p/work/rfisher/svn/clm4_5_16_r260_fates_amazon/cime/scripts/FACE_CLM5_ENS/BASE_clm4_5_16_r260_fates_amazon_ys/surfdata_jan62018_ORNL_xy.nc'\nhist_empty_htapes = .false.\nfinidat='/glade/scratch/rfisher/BASE_clm4_5_16_r260_fates_amazon_PAD/run/BASE_clm4_5_16_r260_fates_amazon_PAD.clm2.r.2098-01-01-00000.nc'\nparamfile='/glade/u/home/rfisher/Matlab/pft_files/FACE_CLM_params/FACE_CLM_params_jan18_pi$p$x.nc'"
+echo  $uclm >user_nl_clm
+
+
+
+./case.setup
+#./case.build
+#./case.submit
+@ x ++
+end
+@ p ++
+end
+    

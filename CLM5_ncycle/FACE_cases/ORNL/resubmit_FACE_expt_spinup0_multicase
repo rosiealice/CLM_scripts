@@ -1,0 +1,41 @@
+#! /bin/tcsh -f
+setenv CODENAME clm4_5_16_r260_fates_amazon
+setenv NAME FACE_
+set niter=5
+set nparam=15
+set p=1
+
+while ($p<$nparam)
+set x=1
+while ($x<$niter)
+
+setenv EXPTNAME FUN_sens_ens_D_PI$p$x
+set echo
+
+cd  /glade/p/work/rfisher/svn/$CODENAME
+
+cd cime/scripts
+cd FACE_CLM5_ENS
+pwd
+
+cd $EXPTNAME
+
+./xmlchange RESUBMIT=2
+./xmlchange CCSM_CO2_PPMV=287
+./xmlchange JOB_QUEUE=share
+./xmlchange MAX_TASKS_PER_NODE=1
+./xmlchange MPILIB=mpi-serial
+./case.setup --reset
+./xmlchange BUILD_COMPLETE=TRUE
+
+cat user_nl_clm
+
+#./case.setup
+
+#./case.build
+./case.submit
+@ x ++
+end
+@ p ++
+end
+    

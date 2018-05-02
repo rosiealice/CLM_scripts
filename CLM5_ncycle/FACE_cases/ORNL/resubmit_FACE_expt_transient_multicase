@@ -1,0 +1,44 @@
+#! /bin/tcsh -f
+setenv CODENAME clm4_5_16_r260_fates_amazon
+set niter=5
+set nparam=15
+set p=1
+
+while ($p<$nparam)
+set x=1
+while ($x<$niter)
+
+setenv EXPTNAME FUN_sens_ens_transient_E_PI$p$x
+set echo
+
+cd  /glade/p/work/rfisher/svn/$CODENAME
+
+cd cime/scripts
+cd FACE_CLM5_ENS
+pwd
+
+cd $EXPTNAME
+
+./xmlchange CONTINUE_RUN=FALSE
+./xmlchange RESUBMIT=2
+./xmlchange JOB_WALLCLOCK_TIME="5:30:00"
+./xmlchange JOB_QUEUE=share
+./xmlchange MAX_TASKS_PER_NODE=1
+./xmlchange MPILIB=mpi-serial
+./case.setup --reset
+./xmlchange BUILD_COMPLETE=TRUE
+
+set uclm="fsurdat='/glade/p/work/rfisher/svn/clm4_5_16_r260_fates_amazon/cime/scripts/FACE_CLM5_ENS/BASE_clm4_5_16_r260_fates_amazon_ys/surfdata_jan62018_ORNL_xy.nc'\nhist_empty_htapes = .false.\nfinidat='/glade/scratch/rfisher/FUN_sens_ens_D_PI$p$x/run/FUN_sens_ens_D_PI$p$x.clm2.r.2088-01-01-00000.nc'\nparamfile='/glade/u/home/rfisher/Matlab/pft_files/FACE_CLM_params/FACE_CLM_params_jan1718_pi$p$x.nc'"
+echo  $uclm >user_nl_clm
+
+cat user_nl_clm
+cat user_nl_datm
+
+#./case.setup
+#./case.build
+./case.submit
+@ x ++
+end
+@ p ++
+end
+    

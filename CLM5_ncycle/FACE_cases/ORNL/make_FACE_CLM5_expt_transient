@@ -1,0 +1,75 @@
+#! /bin/tcsh -f
+setenv CODENAME clm4_5_16_r260_fates_amazon
+setenv NAME FACE_ORNL_BASELINE_TRANSIENT_
+setenv DIRNAME FACE_CLM5_ENS
+
+setenv EXPTNAME $NAME$CODENAME
+set echo
+
+cd  /glade/p/work/rfisher/svn/$CODENAME
+
+cd cime/scripts
+pwd
+
+cd $DIRNAME
+rm -rf $EXPTNAME
+
+rm -rf /glade/scratch/rfisher/$EXPTNAME/run
+
+../create_newcase --case $EXPTNAME --res CLM_USRDAT --compset 2000_DATM%1PT_CLM50%BGC_SICE_SOCN_RTM_SGLC_SWAV --run-unsupported
+
+cd $EXPTNAME
+
+./xmlchange EXEROOT=/glade/scratch/rfisher/BASE_clm4_5_16_r260_fates_amazon/bld/
+./xmlchange BUILD_COMPLETE=TRUE
+./xmlchange CLM_USRDAT_NAME=1x1pt_US-ORN
+./xmlchange DATM_CLMNCEP_YR_START=1998
+./xmlchange DATM_CLMNCEP_YR_END=2008
+./xmlchange CLM_BLDNML_OPTS='-mask navy'
+./xmlchange MPILIB=mpi-serial
+./xmlchange ATM_DOMAIN_PATH=/glade/u/home/rfisher/FACE_expt/PTCLM/mydatafiles
+./xmlchange LND_DOMAIN_PATH=/glade/u/home/rfisher/FACE_expt/PTCLM/mydatafiles
+./xmlchange ATM_DOMAIN_FILE=domain.lnd.1x1pt_US-ORN.nc
+./xmlchange LND_DOMAIN_FILE=domain.lnd.1x1pt_US-ORN.nc
+./xmlchange CALENDAR=GREGORIAN
+./xmlchange DOUT_S=FALSE
+./xmlchange ATM_NCPL=48
+./xmlchange RUN_STARTDATE=1765-01-01
+./xmlchange DATM_CLMNCEP_YR_ALIGN=1998
+./xmlchange DIN_LOC_ROOT=/glade/p/cesm/cseg/inputdata
+./xmlchange DIN_LOC_ROOT_CLMFORC=/glade/u/home/rfisher/FACE_expt/PTCLM/mydatafiles
+./xmlchange STOP_N=100
+./xmlchange STOP_OPTION=nyears
+./xmlchange CLM_BLDNML_OPTS="-mask navy -bgc bgc"
+./xmlchange RESUBMIT=0
+./xmlchange CCSM_CO2_PPMV=287
+./xmlchange CLM_CO2_TYPE=diagnostic
+./xmlchange REST_N=4
+#./xmlchange CCSM_BGC=CO2A
+#./xmlchange DATM_CO2_TSERIES=rcp8.5
+
+
+cp /glade/u/home/rfisher/clm_case_scripts/user_nl_datm_FACE_transient user_nl_datm
+#cp /glade/u/home/rfisher/clm_case_scripts/user_nl_datm_FACE_spinup user_nl_datm
+# can't work out how to write this directly from the script. 
+cat user_nl_datm
+
+#only for transient simulations
+cp /glade/u/home/rfisher/clm_case_scripts/datm.streams.txt.co2tseries_control_newformat /glade/scratch/rfisher/$EXPTNAME/run/datm.streams.txt.co2tseries
+
+
+# write user_nl_clm
+set uclm="fsurdat='/glade/p/work/rfisher/svn/clm4_5_16_r260_fates_amazon/cime/scripts/FACE_CLM5_ENS/BASE_clm4_5_16_r260_fates_amazon_ys/surfdata_jan62018_ORNL_xy.nc'\nfinidat='/glade/scratch/rfisher/BASE_clm4_5_16_r260_fates_amazon_DEF_RESPIN/run/BASE_clm4_5_16_r260_fates_amazon_DEF_RESPIN.clm2.r.2088-01-01-00000.nc'"
+
+echo  $uclm >user_nl_clm
+
+./case.setup
+
+cp /glade/u/home/rfisher/clm_case_scripts/datm.streams.txt.co2tseries_control_newformat /glade/scratch/rfisher/$EXPTNAME/run/datm.streams.txt.co2tseries
+cp /glade/u/home/rfisher/clm_case_scripts/datm.streams.txt.co2tseries_elev_newformat /glade/scratch/rfisher/$EXPTNAME/run/datm.streams.txt.co2tseries
+
+#cp /glade/scratch/rfisher/FACE_BASELINE_TRANSIENT_clm4_5_16_r260_fates_amazon/run/datm.streams.txt.co2tseries.rcp8.5 /glade/scratch/rfisher/$EXPTNAME/run/datm.streams.txt.co2tseries
+#./case.build
+./case.submit
+
+    
